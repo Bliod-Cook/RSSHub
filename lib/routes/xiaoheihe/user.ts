@@ -62,7 +62,7 @@ async function get_post(url: string) {
         linkId: item.linkid,
         link: `https://api.xiaoheihe.cn/v3/bbs/app/api/web/share?link_id=${item.linkid}`,
         title: item.title,
-        pubDate: parseDate(item.modify_at * 1000),
+        pubDate: parseDate(item.create_at * 1000),
         description: item.description,
     }));
     items = await Promise.all(
