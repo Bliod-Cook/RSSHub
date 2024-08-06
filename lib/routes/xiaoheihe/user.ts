@@ -65,6 +65,7 @@ async function get_post(url: string) {
         pubDate: parseDate(item.create_at * 1000),
         description: item.description,
     }));
+
     items = await Promise.all(
         items.map((item) =>
             cache.tryGet(item.link, async () => {
