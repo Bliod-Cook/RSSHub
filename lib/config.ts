@@ -168,6 +168,9 @@ export type Config = {
     javdb: {
         session?: string;
     };
+    keylol: {
+        cookie?: string;
+    };
     lastfm: {
         api_key?: string;
     };
@@ -534,6 +537,9 @@ const calculateValue = () => {
         javdb: {
             session: envs.JAVDB_SESSION,
         },
+        keylol: {
+            cookie: envs.KEYLOL_COOKIE,
+        },
         lastfm: {
             api_key: envs.LASTFM_API_KEY,
         },
@@ -715,11 +721,11 @@ calculateValue();
     }
 
     if (!envs.DISABLE_UMAMI && envs.NODE_ENV === 'production') {
-        ofetch(`https://umami.rss3.io/api/send`, {
+        ofetch('https://umami.rss3.io/api/send', {
             method: 'POST',
             headers: {
                 'content-type': 'application/json',
-                'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+                'user-agent': TRUE_UA,
             },
             body: JSON.stringify({
                 payload: {
