@@ -30,12 +30,33 @@ async function handler(ctx) {
         url: `https://api.xiaoheihe.cn/bbs/app/profile/user/profile?lang=zh-cn&version=1.3.303&userid=${userId}`,
     });
     const username = userResponse.data.result.account_detail.username;
+    const postNum = Number(userResponse.data.result.account_detail.bbs_info.post_link_num);
 
+    const urls: any[] = [];
+    for (let i = 0; i < postNum; i += 50) {
+        urls.push(`https://api.xiaoheihe.cn/bbs/web/profile/post/links?userid=${userId}&limit=50&offset=${i}&version=999.0.0`);
+    }
+
+    const itemsList = await Promise.all(urls.map(async (url) => await get_post(url)));
+
+    let items: any[] = [];
+    for (const per_items of itemsList) {
+        items = [...items, ...per_items];
+    }
+
+    return {
+        title: `${username} 的动态`,
+        link: `https://xiaoheihe.cn`,
+        item: items,
+    };
+}
+
+async function get_post(url: string) {
     const response = await got({
         method: 'get',
-        url: `https://api.xiaoheihe.cn/bbs/app/profile/events?lang=zh-cn&version=1.3.303&userid=${userId}&list_type=moment`,
+        url,
     });
-    const data = response.data.result.moments.filter((item) => item.linkid !== undefined);
+    const data = response.data.post_links.filter((item) => item.linkid !== undefined);
 
     let items = data.map((item) => ({
         linkId: item.linkid,
@@ -61,9 +82,5 @@ async function handler(ctx) {
         )
     );
 
-    return {
-        title: `${username} 的动态`,
-        link: `https://xiaoheihe.cn`,
-        item: items,
-    };
+    return items;
 }
